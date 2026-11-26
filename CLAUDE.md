@@ -20,3 +20,9 @@ mikrofonom kroz WebRTC: 1:1 je pravi P2P (`flutter_webrtc`), a LiveKit je za sob
 
 Veza s web aplikacijom: `../logomedo.com` (Astro + Cloudflare Workers). LiveKit tokeni i zahtjevi za podršku idu kroz nju
 (`docs/plan.md`, faze 5 i 6).
+
+## Lanac sesija (todo-plan)
+
+Plan od 26. 11. 2026.: `TODO.md`, `docs/plan.md`, `docs/decisions.md`, `docs/handoffs/`. „Nastavi logomedo-desk” znači
+prvi red koji nije „gotovo” u „Stanje lanca” u `docs/handoffs/README.md`; prompt je `SN.md`. Na macOS-u lanac može vrtjeti
+`/todo-plan-exec docs/handoffs/`, a na Windowsu se vrti ručno, sesiju po sesiju (odluka 10).

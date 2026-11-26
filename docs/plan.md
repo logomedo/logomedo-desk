@@ -1,54 +1,55 @@
-# Plan
+# Plan po sesijama
 
-Razvoj na macOS-u (Apple Silicon), a Windows build na zasebnom Windows računalu s Claude Codeom (isti repo, `--recursive`).
+LogoMedoDesk spaja dvije stvari koje logopedima i LogoMedo podršci danas trebaju odvojeno. Prvo, udaljenu podršku:
+najčešći problem pri prijavi u LogoMedo je passkey u Chromeu bez Google računa, a korisnik treba samo pokrenuti exe i kliknuti
+„Prihvati”. Drugo, daljinsku terapiju: logoped, roditelj i dijete s kamerom i mikrofonom, uz dijeljenje ekrana.
+RustDesk (Flutter + Rust) već rješava ekran i upravljanje. Dodajemo WebRTC za kameru i mikrofon (1:1 pravi P2P, LiveKit za
+sobe) i brendiranje. Arhitektura: [arhitektura.md](arhitektura.md). Verzije i zamke: [forkovi.md](forkovi.md).
 
-## Faza 0: temelj (gotovo 26. 11. 2026.)
+## Tvrdi uvjeti (svaka sesija)
 
-- [x] Forkovi u `logomedo` i submoduli u `vendor/`
-- [x] Arhitektura, verzije i zamke (`docs/`)
-- [x] Skripte za postavljanje (macOS, Windows) i sinkronizaciju s upstreamom
-- [x] `server/docker-compose.yml`: hbbs, hbbr, LiveKit (dev)
+- Repo je **javan** (AGPL-3.0): bez ključeva, privatnih hostova, e-mailova i osobnih podataka. Ključevi i hostovi idu kroz env i CI secrete.
+- Izmjene u `vendor/*` idu na granu `logomedo` **u forku** (commit i push u fork), zatim se ovdje commita pokazivač submodula.
+  Diff prema upstreamu mora biti što manji.
+- **Primarno računalo za razvoj je Windows** (ciljna platforma korisnika, odluka 1). macOS dolazi u S11.
+- Dugi buildovi idu u pozadinu, a javljaju se samo na kraju ili kod greške.
+- `logomedo.com` je drugi javni repo sa svojim pravilima (`../logomedo.com/CLAUDE.md`): staging prvo, produkcija samo na nalog.
 
-## Faza 1: upogoniti original lokalno (macOS)
+## Sesije
 
-- [ ] Flutter 3.44.9 (preko FVM-a ili zasebne instalacije, da se ne dira sistemski Flutter), Rust 1.81+, vcpkg na commitu iz `forkovi.md`
-- [ ] Build `vendor/rustdesk` po upstream uputama (`python3 build.py --flutter`), pokrenuti, spojiti se na lokalni hbbs/hbbr
-- [ ] Pokrenuti primjer iz `vendor/client-sdk-flutter/example` na lokalni LiveKit (`server/`), dva prozora u istoj sobi
-- [ ] Pokrenuti primjer iz `vendor/flutter-webrtc/example` (loopback)
-- [ ] Zapisati točne naredbe i trajanja u `docs/build-macos.md`
+| # | Faza | Paket | Odluke | Gotovo kad |
+|---|---|---|---|---|
+| S0 | — | Plan, forkovi, submoduli, skripte, compose | 1–20 | gotovo |
+| S1 | F0 | Windows alati, `scripts/provjeri.sh`, build originala (Flutter 3.24.5), lokalni poslužitelji, spoj dvije instance | 100 | `provjeri.sh` zelen; `rustdesk.exe` izgrađen (exit 0); ID registriran na lokalnom hbbs (log); (!) veza s drugog računala prolazi; `docs/build-windows.md` |
+| S2 | F0 | Flutter 3.44.9 na Windows x64 + `livekit_client` i `flutter_webrtc` u RustDesk pubspec; primjeri | 200 | build s ovisnostima exit 0; LiveKit primjer: 2 sudionika u sobi; flutter-webrtc loopback radi. **Vrata ako 3.44 ne prolazi.** |
+| S3 | F1 | Branding, build-time server i ključ, varijanta „brza podrška” | 300 | exe nosi ime i ikonu (snimka zaslona u `docs/`); varijanta podrške u kodu odbija odlazne veze i traži klik; `provjeri.sh` zelen |
+| S4 | F2 | WebRTC signalizacija kroz RustDesk vezu (proto, Rust, most do Fluttera) | 400 | `cargo test` zelen s novim testom; log razmjene SDP između dvije instance |
+| S5 | F2 | Video i zvuk 1:1 P2P u prozoru sesije | 500 | (!) dva računala se vide i čuju; `getStats` zapisan (Opus, tip kandidata, bitrate) |
+| S6 | F2 | TURN + prisilni relay + mjerenje zvuka (sibilanti) | 600 | veza samo preko relaya radi; mjerenje u `docs/research/` |
+| S7 | F3 | `MedijSesija` (P2P i LiveKit), lokalni dev token | 700 | (!) 3 klijenta u sobi; prebacivanje P2P ↔ LiveKit bez diranja ekrana |
+| S8 | F4 | logomedo.com: zahtjevi za podršku, `/admin/uprava/podrska`, LiveKit token (staging) | 800 | `npm test && npm run check && npm run build` zeleni u `../logomedo.com`; E2E na stagingu. **Vrata: produkcija.** |
+| S9 | F4 | Brza podrška exe → staging API → Spoji iz admina | 900 | (!) E2E na stagingu: exe pokrenut → zahtjev u adminu → spojeno |
+| S10 | F5 | GitHub Actions Windows build, priprema potpisa i produkcijskih poslužitelja | 1000 | CI artefakt (nepotpisan) iz `main`. **Vrata: tvrtka za potpis, hosting, domena, trošak.** |
+| S11 | F5 | macOS build (Flutter 3.44.9), priprema notarizacije | 1100 | `.app` se gradi i spaja na lokalni hbbs; `docs/build-macos.md` |
 
-## Faza 2: Windows build
+## Procjena, vrata, rizici
 
-- [ ] Klon na Windows računalu, `scripts\postavi.ps1`, Visual Studio Build Tools, vcpkg, LLVM, Flutter 3.44.9
-- [ ] Odluka o Flutteru za Windows x64 (`forkovi.md`, zamka) i test patcha za 3.44
-- [ ] Zapisati u `docs/build-windows.md`
+- **12 sesija** (S0–S11), bez procjene trajanja: S1 mjeri koliko traje build (vcpkg i cargo su najsporiji).
+- **Vrata:**
+  - nakon S2 samo ako Flutter 3.44.9 na Windows x64 ne prolazi (tada korisnik bira: stariji `livekit_client` ili čekanje upstreama);
+  - nakon S8 produkcija logomedo.com;
+  - u S10 potpisivanje (tvrtka, Azure), hosting i domena poslužitelja, svaki trošak.
+- **(!)** označava korake koji traže korisnika ili drugo računalo (kamera, mikrofon, klik „Prihvati”). Sesija pripremi sve i
+  upiše što točno korisnik treba napraviti; ako korisnik nije tu, upiše to na vrh sljedećeg handoffa i lanac staje.
+- **Najrizičniji:** S2 (Flutter 3.44 na Windows x64 s RustDeskom i LiveKitom zajedno, plus WebRTC nativni pluginovi uz
+  RustDeskove), S4 (diranje RustDesk protokola i flutter_rust_bridge mosta), S6 (kvaliteta zvuka za logopediju je pravi cilj
+  terapije, a mjeri se tek ovdje).
+- **Paralelno:** S11 (macOS) može bilo kad nakon S3, na Macu, jer ne mijenja iste datoteke. S8 (logomedo.com) može paralelno
+  sa S5–S7 jer je drugi repo. Ostalo je linearno.
+- **Izvođenje:** `todo-plan-exec` radi samo na macOS-u (iTerm2). Na Windowsu se lanac vrti ručno: nova sesija i „nastavi
+  logomedo-desk”, odnosno sadržaj sljedećeg `SN.md`.
 
-## Faza 3: branding
+## Gdje smo
 
-- [ ] `APP_NAME` „LogoMedoDesk”, ikone (`res/`, `flutter/windows/runner/resources`, `flutter/macos/Runner/AppIcon.icns`), bundle id
-- [ ] Zadani rendezvous poslužitelj i javni ključ ugrađeni u build (`RENDEZVOUS_SERVER`, `RS_PUB_KEY`)
-- [ ] Samo dolazne veze za korisničku verziju (`conn-type=incoming`), pristanak klikom (`approve-mode=click`), bez instalacije
-
-## Faza 4: kamera i mikrofon, 1:1 P2P
-
-- [ ] Nova protobuf poruka za WebRTC signalizaciju kroz RustDesk vezu
-- [ ] `flutter_webrtc` u `vendor/rustdesk/flutter`: lokalni/udaljeni video u prozoru sesije, mute, odabir uređaja
-- [ ] Postavke zvuka za logopediju (`arhitektura.md`)
-- [ ] TURN za stroge mreže
-
-## Faza 5: LiveKit
-
-- [ ] `livekit_client` u istom UI sloju (`MedijSesija`)
-- [ ] Token za sobu iz logomedo.com (Worker, samo prijavljeni logoped)
-- [ ] Soba logoped + roditelj + dijete; snimanje tek uz privolu (kasnije)
-
-## Faza 6: veza s logomedo.com
-
-- [ ] `/admin/uprava/podrska`: zahtjevi za podršku (RustDesk ID javlja klijent, kratki jednokratni kod), gumb Spoji
-- [ ] Za terapiju: zakazivanje sesije i poveznica za roditelja
-
-## Otvoreno
-
-- Potpisivanje: Windows (Azure Artifact Signing na tvrtku), macOS (Developer ID + notarizacija)
-- Smjer ekrana kod terapije (`arhitektura.md`, „Smjer”)
-- Hosting poslužitelja (relay, TURN, LiveKit) i domena (DNS only, izvan Cloudflare proxyja)
+S0 (26. 11. 2026.): plan, forkovi, submoduli, skripte i compose. Koda u forkovima još nema, ništa nije izgrađeno.
+Lokalni poslužitelji provjereni na macOS-u.

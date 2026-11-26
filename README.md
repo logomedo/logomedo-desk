@@ -7,7 +7,8 @@ Udaljena podrška i daljinska logopedska terapija za [LogoMedo](https://logomedo
   a [LiveKit](https://livekit.io) je od prvog dana tu za sobe, više sudionika i snimanje uz privolu.
 - **Vlastiti poslužitelji:** RustDesk relay (hbbs/hbbr), TURN i LiveKit.
 
-Stanje: početak (26. 11. 2026.). Ništa još nije izgrađeno. Plan je u [docs/plan.md](docs/plan.md), arhitektura u
+Stanje: početak (26. 11. 2026.), ništa još nije izgrađeno. Rad ide kao lanac sesija: [TODO.md](TODO.md),
+[docs/plan.md](docs/plan.md), [docs/handoffs/](docs/handoffs/). Arhitektura je u
 [docs/arhitektura.md](docs/arhitektura.md).
 
 ## Struktura
