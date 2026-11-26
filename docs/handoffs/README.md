@@ -25,7 +25,7 @@ Izvođenje: na macOS-u `/todo-plan-exec docs/handoffs/`, a na Windowsu ručno, s
 
 | Sesija | Paket | Stanje | Commit | Provjera | Napomena |
 | --- | --- | --- | --- | --- | --- |
-| S0 | Plan, forkovi, submoduli, skripte, compose | gotovo | (upisuje se) | compose na macOS-u | odluke 1–11 |
+| S0 | Plan, forkovi, submoduli, skripte, compose | gotovo | 8b16903 | compose na macOS-u | odluke 1–11 |
 | S1 | Windows alati, build originala, lokalni poslužitelji | otvoreno | | | |
 | S2 | Flutter 3.44.9 + livekit_client + flutter_webrtc | otvoreno | | | vrata ako 3.44 ne prolazi |
 | S3 | Branding i varijanta brza podrška | otvoreno | | | |

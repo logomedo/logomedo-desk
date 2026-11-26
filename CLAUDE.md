@@ -19,7 +19,7 @@ mikrofonom kroz WebRTC: 1:1 je pravi P2P (`flutter_webrtc`), a LiveKit je za sob
 - Commit poruke na hrvatskom, `tip(opseg): sažetak`.
 
 Veza s web aplikacijom: `../logomedo.com` (Astro + Cloudflare Workers). LiveKit tokeni i zahtjevi za podršku idu kroz nju
-(`docs/plan.md`, faze 5 i 6).
+(`docs/plan.md`, S7–S9).
 
 ## Lanac sesija (todo-plan)
 
