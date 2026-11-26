@@ -1,0 +1,6 @@
+vendor/rustdesk https://github.com/rustdesk/rustdesk.git
+vendor/hbb_common https://github.com/rustdesk/hbb_common.git
+vendor/rustdesk-server https://github.com/rustdesk/rustdesk-server.git
+vendor/livekit https://github.com/livekit/livekit.git
+vendor/client-sdk-flutter https://github.com/livekit/client-sdk-flutter.git
+vendor/flutter-webrtc https://github.com/flutter-webrtc/flutter-webrtc.git

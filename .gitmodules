@@ -1,0 +1,18 @@
+[submodule "vendor/rustdesk"]
+	path = vendor/rustdesk
+	url = https://github.com/logomedo/rustdesk.git
+[submodule "vendor/hbb_common"]
+	path = vendor/hbb_common
+	url = https://github.com/logomedo/hbb_common.git
+[submodule "vendor/rustdesk-server"]
+	path = vendor/rustdesk-server
+	url = https://github.com/logomedo/rustdesk-server.git
+[submodule "vendor/livekit"]
+	path = vendor/livekit
+	url = https://github.com/logomedo/livekit.git
+[submodule "vendor/client-sdk-flutter"]
+	path = vendor/client-sdk-flutter
+	url = https://github.com/logomedo/client-sdk-flutter.git
+[submodule "vendor/flutter-webrtc"]
+	path = vendor/flutter-webrtc
+	url = https://github.com/logomedo/flutter-webrtc.git

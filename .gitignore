@@ -1,0 +1,4 @@
+server/data/
+.DS_Store
+.fvm/
+*.log
